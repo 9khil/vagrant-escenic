@@ -7,10 +7,15 @@
 # @see http://docs.escenic.com/ece-install-guide/5.7/
 # @author stefan.norman@bricco.se
 
-DOWNLOAD_URI_TOMCAT="http://apache.mirrors.spacedump.net/tomcat/tomcat-7/v7.0.54/bin/apache-tomcat-7.0.54.tar.gz"
-DOWNLOAD_URI_ENGINE="http://escenic:documentation@technet.escenic.com/downloads/release/57/engine-5.7.1.151922.zip"
-DOWNLOAD_URI_ASSEMBLYTOOL="http://escenic:documentation@technet.escenic.com/downloads/release/56/assemblytool-2.0.5.zip"
-DOWNLOAD_URI_MYSQL_DRIVER="http://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-5.1.31.tar.gz"
+
+# @modified by Nikhil André Luthra
+# See readme for information about changes.
+
+
+DOWNLOAD_URI_TOMCAT="http://apache.uib.no/tomcat/tomcat-7/v7.0.62/bin/apache-tomcat-7.0.62.tar.gz"
+DOWNLOAD_URI_ENGINE="http://escenic:documentation@technet.escenic.com/downloads/release/57/engine-5.7.49.168483.zip"
+DOWNLOAD_URI_ASSEMBLYTOOL="http://escenic:documentation@technet.escenic.com/downloads/release/57/assemblytool-2.0.7.zip"
+DOWNLOAD_URI_MYSQL_DRIVER="http://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-5.1.36.tar.gz"
 
 DB_NAME="escenic"
 DB_USER="escenic"
@@ -28,10 +33,10 @@ sudo apt-get -q update
 
 # install_java_development_kit__jdk_.html
 if [ ! -d /opt/java/jdk ]; then
-    wget -nv --no-cookies --no-check-certificate --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie" "http://download.oracle.com/otn-pub/java/jdk/7u60-b19/jdk-7u60-linux-x64.tar.gz"
-    tar xf jdk-7u60-linux-x64.tar.gz
+    wget -nv --no-cookies --no-check-certificate --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie" "http://download.oracle.com/otn-pub/java/jdk/8u45-b14/jdk-8u45-linux-x64.tar.gz"
+    tar xf jdk-8u45-linux-x64.tar.gz
     sudo mkdir /opt/java/
-    sudo mv jdk1.7.0_60 /opt/java/jdk
+    sudo mv jdk1.8.0_45 /opt/java/jdk
     sudo update-alternatives --install "/usr/bin/java" "java" "/opt/java/jdk/bin/java" 1
     sudo update-alternatives --set java /opt/java/jdk/bin/java
     rm -f jdk-7u60-linux-x64.tar.gz
