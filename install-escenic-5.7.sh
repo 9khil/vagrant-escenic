@@ -13,7 +13,7 @@
 
 
 DOWNLOAD_URI_TOMCAT="http://apache.uib.no/tomcat/tomcat-7/v7.0.62/bin/apache-tomcat-7.0.62.tar.gz"
-DOWNLOAD_URI_ENGINE="http://escenic:documentation@technet.escenic.com/downloads/release/57/engine-5.7.49.168483.zip"
+DOWNLOAD_URI_ENGINE="http://escenic:documentation@technet.escenic.com/downloads/release/57/engine-5.7.50.169448.zip"
 DOWNLOAD_URI_ASSEMBLYTOOL="http://escenic:documentation@technet.escenic.com/downloads/release/57/assemblytool-2.0.7.zip"
 DOWNLOAD_URI_MYSQL_DRIVER="http://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-5.1.36.tar.gz"
 
@@ -28,7 +28,6 @@ fi
 
 sudo apt-get -q update
 
-
 # Start installing according install guide
 
 # install_java_development_kit__jdk_.html
@@ -39,7 +38,7 @@ if [ ! -d /opt/java/jdk ]; then
     sudo mv jdk1.8.0_45 /opt/java/jdk
     sudo update-alternatives --install "/usr/bin/java" "java" "/opt/java/jdk/bin/java" 1
     sudo update-alternatives --set java /opt/java/jdk/bin/java
-    rm -f jdk-7u60-linux-x64.tar.gz
+    rm -f jdk-8u45-linux-x64.tar.gz
 
     # Verify that Java is correctly installed
     java -version
@@ -104,7 +103,7 @@ then
     # Run the database scripts
     cd engine*/database/mysql/
     for el in tables.sql indexes.sql constants.sql constraints.sql; do
-        mysql -u $DB_USER -p$DB_PASSWORD $DB_NAME < $el
+        mysql -u $DB_USER -p $DB_PASSWORD $DB_NAME < $el
     done;
 
     # Verify that MySQL is correctly installed
@@ -119,6 +118,7 @@ if [ ! -d /opt/tomcat ]; then
     TOMCAT_DIR=$(basename /opt/apache-tomcat-*)
     sudo ln -s /opt/$TOMCAT_DIR /opt/tomcat
     sudo chown -R escenic:escenic /opt/$TOMCAT_DIR
+    sudo chmod -R 777 /opt/$TOMCAT_DIR/conf
 
     # Add escenic/lib to catalina.properties
     cat << EOF > /tmp/diff.patch
@@ -161,11 +161,11 @@ EOF
 +      maxActive="30"
 +      maxIdle="10"
 +      maxWait="5000"
-+      url="jdbc:mysql://$DB_NAME/db-name?autoReconnect=true&amp;useUnicode=true&amp;characterEncoding=UTF-8"
++      url="jdbc:mysql://localhost/$DB_NAME?autoReconnect=true&amp;useUnicode=true&amp;characterEncoding=UTF-8"
 +    />
 +    <Environment
 +      name="escenic/indexer-webservice"
-+      value="http://indexer-web-service-host:8080/indexer-webservice/web-service-name/"
++      value="http://localhost:8080/indexer-webservice/web-service-name/"
 +      type="java.lang.String"
 +      override="false"/>
 +
@@ -370,6 +370,7 @@ fi
 # install_the_ece_script.html
 if [ ! -f /usr/bin/ece ]; then
     sudo cp /opt/escenic/engine/ece-scripts/usr/bin/ece /usr/bin
+    sudo chmod +x /opt/escenic/engine/ece-scripts/usr/bin/ece
     sudo chmod +x /usr/bin/ece
     sudo su escenic -c "cp /opt/escenic/engine/ece-scripts/etc/escenic/ece.conf /etc/escenic/"
     cat << EOF > /tmp/diff.patch
