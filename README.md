@@ -10,3 +10,8 @@ A Vagrant box for installing Escenic CMS
 - MySQL Connector 5.1.36
 - Java jdk-8u45-linux-x64
 
+
+## Known bugs
+
+Java path variables aren't being set. 
+Missing ece daemon scripts..
