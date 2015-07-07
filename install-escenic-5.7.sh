@@ -12,7 +12,7 @@
 # See readme for information about changes.
 
 
-DOWNLOAD_URI_TOMCAT="http://apache.uib.no/tomcat/tomcat-7/v7.0.62/bin/apache-tomcat-7.0.62.tar.gz"
+DOWNLOAD_URI_TOMCAT="http://apache.uib.no/tomcat/tomcat-7/v7.0.63/bin/apache-tomcat-7.0.63.tar.gz"
 DOWNLOAD_URI_ENGINE="http://escenic:documentation@technet.escenic.com/downloads/release/57/engine-5.7.50.169448.zip"
 DOWNLOAD_URI_ASSEMBLYTOOL="http://escenic:documentation@technet.escenic.com/downloads/release/57/assemblytool-2.0.7.zip"
 DOWNLOAD_URI_MYSQL_DRIVER="http://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-5.1.36.tar.gz"
@@ -70,6 +70,7 @@ if [ ! $(grep escenic /etc/passwd) ]; then
 
     sudo su escenic -c "echo 'export JAVA_HOME=/opt/java/jdk' >> ~/.bashrc"
     sudo su escenic -c "echo 'export PATH=\$JAVA_HOME/bin:\$PATH' >> ~/.bashrc"
+    sudo su escenic -c "source ~/.bashrc" 
 fi
 
 # create_shared_file_system.html
