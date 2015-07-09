@@ -21,6 +21,7 @@ DB_NAME="escenic"
 DB_USER="escenic"
 DB_PASSWORD="escenic"
 
+
 # Install some script helpers
 if [ ! -f /usr/bin/patch ]; then
     sudo apt-get -q -y install patch
@@ -68,9 +69,19 @@ if [ ! $(grep escenic /etc/passwd) ]; then
     sudo mkdir /home/escenic
     sudo chown -R escenic:escenic /home/escenic
 
+    sudo usermod -a -G sudo escenic
+
+    #for escenic user
     sudo su escenic -c "echo 'export JAVA_HOME=/opt/java/jdk' >> ~/.bashrc"
     sudo su escenic -c "echo 'export PATH=\$JAVA_HOME/bin:\$PATH' >> ~/.bashrc"
-    sudo su escenic -c "source ~/.bashrc" 
+    #sudo su escenic -c "echo 'source ~/.bashrc'" 
+
+    sudo su escenic -c "echo 'if [ -f ~/.bashrc ]; then' >> ~/.bash_profile"
+    sudo su escenic -c "echo 'source ~/.bashrc' >> ~/.bash_profile"
+    sudo su escenic -c "echo 'fi' >> ~/.bash_profile"
+
+    sudo su escenic -c "echo 'source ~/.bash_profile'"
+
 fi
 
 # create_shared_file_system.html
@@ -402,8 +413,53 @@ EOF
     sudo chown escenic:escenic /var/{crash,lib,log,run,cache,spool}/escenic -R
 fi 
 
+
+# Using java 8 with tomcat 7, need to add settings to /opt/tomcat/conf/web.xml
+# http://docs.escenic.com/ece-tech-notes/5.7/jsp_servlet_configuration.html
+
+cat << EOF > /tmp/diff.patch
+--- web.xml 2015-06-30 10:13:15.000000000 +0200
++++ web_updated.xml 2015-07-08 12:18:26.000000000 +0200
+@@ -245,6 +245,13 @@
+             <param-value>false</param-value>
+         </init-param>
+         <load-on-startup>3</load-on-startup>
++        <init-param>
++    <param-name>compilerSourceVM</param-name>
++    <param-value>1.8</param-value></init-param>
++  <init-param>
++    <param-name>compilerTargetVM</param-name>
++    <param-value>1.8</param-value>
++  </init-param>
+     </servlet>
+ 
+ 
+EOF
+sudo patch /opt/tomcat/conf/web.xml < /tmp/diff.patch
+
+
 # assemble_and_deploy.html
 sudo su escenic -c "ece assemble"
-sudo su escenic -c "ece deploy"
+#sudo su escenic -c "ece deploy"
+
+
+# Install a Daemon script
+# install_a_daemon_script.html
+
+if [ ! -f /etc/init.d/ece ]; then
+    sudo cp /opt/escenic/engine/ece-scripts/etc/init.d/ece /etc/init.d
+    sudo cp /opt/escenic/engine/ece-scripts/etc/default/ece /etc/default
+
+    sudo chmod +x /etc/init.d/ece
+    sudo chmod +x /etc/default/ece
+
+
+    sudo su
+    /etc/init.d/ece start
+    update-rc.d ece defaults
+
+fi
+
+
 
 exit 0

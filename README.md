@@ -11,14 +11,15 @@ A Vagrant box for installing Escenic CMS
 - Java jdk-8u45-linux-x64
 
 
-## Known bugs
+## Usage
 
-- Java path variables aren't being set. 
-- Missing ece daemon scripts..
+- vagrant up
+- ssh into box with escenic user: ssh -p 2222 escenic@localhost 
+- run 'ece deploy'
+- run 'ece start'
+- go to localhost:8080/escenic-admin to verify installation.
 
 
-## ToDO:
+## Problems?
 
-- autoadd 1.8 version stuff when using tomcat 7 with java 8
-- fix java paths
-- ece deamon scripts
+- Verify that all urls in install-escenic-5.7.sh are up and working
