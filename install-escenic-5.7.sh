@@ -24,6 +24,9 @@ DB_PASSWORD="escenic"
 
 # Install some script helpers
 if [ ! -f /usr/bin/patch ]; then
+    echo "********************"
+    echo "Install script helpers.."
+    echo "********************"
     sudo apt-get -q -y install patch
 fi
 
@@ -33,6 +36,9 @@ sudo apt-get -q update
 
 # install_java_development_kit__jdk_.html
 if [ ! -d /opt/java/jdk ]; then
+    echo "********************"
+    echo "Installing JDK"
+    echo "********************"
     wget -nv --no-cookies --no-check-certificate --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie" "http://download.oracle.com/otn-pub/java/jdk/8u45-b14/jdk-8u45-linux-x64.tar.gz"
     tar xf jdk-8u45-linux-x64.tar.gz
     sudo mkdir /opt/java/
@@ -47,6 +53,9 @@ fi
 
 # install_ant.html
 if [ ! -d /usr/share/ant/ ]; then
+    echo "********************"
+    echo "Installing ANT.."
+    echo "********************"
     sudo apt-get -q -y install ant
 
     # Verify that ant is correctly installed
@@ -55,15 +64,25 @@ fi
 
 # install_various_utilities.html
 if [ ! -f /usr/bin/unzip ]; then
+    echo "********************"
+    echo "Installing Unzip.."
+    echo "********************"
     sudo apt-get -q -y install unzip
 fi
 if [ ! -f /usr/bin/telnet ]; then
+    echo "********************"
+    echo "Installing Telnet.."
+    echo "********************"
     sudo apt-get -q -y install telnet
 fi
 # Skipped step openssh-server since Vagrant already took care of it
 
 # create_escenic_user.html
 if [ ! $(grep escenic /etc/passwd) ]; then
+    echo "********************"
+    echo "Creating escenic user and adding JDK to path.."
+    echo "********************"
+
     # create user escenic with password escenic
     sudo useradd -p $(openssl passwd -1 escenic) -s /bin/bash -d /home/escenic escenic
     sudo mkdir /home/escenic
@@ -89,15 +108,24 @@ fi
 
 # download_content_engine.html
 if [ ! -f /tmp/engine.zip ]; then
+    echo "********************"
+    echo "Downloading Escenic engine.."
+    echo "********************"
     wget -nv $DOWNLOAD_URI_ENGINE -O /tmp/engine.zip
 fi
 if [ ! -f /tmp/assemblytool.zip ]; then
+    echo "********************"
+    echo "Downloading assemblytool.."
+    echo "********************"
     wget -nv $DOWNLOAD_URI_ASSEMBLYTOOL -O /tmp/assemblytool.zip
 fi
 
 # install_database.html
 if [ ! -d /var/lib/mysql ];
 then
+    echo "********************"
+    echo "Installing databases and importing .sql files.."
+    echo "********************"
     # Install MySQL
     sudo debconf-set-selections <<< 'mysql-server-5.5 mysql-server/root_password password rootpass'
     sudo debconf-set-selections <<< 'mysql-server-5.5 mysql-server/root_password_again password rootpass'
@@ -109,14 +137,23 @@ then
     echo "GRANT ALL ON $DB_NAME.* TO '$DB_USER'@'localhost'" | mysql -uroot -prootpass
     echo "flush privileges" | mysql -uroot -prootpass
 
-    # Change user to escenic and unpack the Content Engine package
+    # Change user to escenic (not needed?) and unpack the Content Engine package
     cd /tmp
     unzip -q engine.zip
     # Run the database scripts
     cd engine*/database/mysql/
-    for el in tables.sql indexes.sql constants.sql constraints.sql; do
-        mysql -u $DB_USER -p $DB_PASSWORD $DB_NAME < $el
-    done;
+
+    echo "mysql -u$DB_USER -p$DB_PASSWORD $DB_NAME < tables.sql"
+    mysql -u$DB_USER -p$DB_PASSWORD $DB_NAME < tables.sql
+    
+    echo "mysql -u$DB_USER -p$DB_PASSWORD $DB_NAME < indexes.sql"
+    mysql -u$DB_USER -p$DB_PASSWORD $DB_NAME < indexes.sql
+
+    echo "mysql -u$DB_USER -p$DB_PASSWORD $DB_NAME < constants.sql"
+    mysql -u$DB_USER -p$DB_PASSWORD $DB_NAME < constants.sql
+
+    echo "mysql -u$DB_USER -p$DB_PASSWORD $DB_NAME < constraints.sql"
+    mysql -u$DB_USER -p$DB_PASSWORD $DB_NAME < constraints.sql
 
     # Verify that MySQL is correctly installed
     mysqladmin -u root -prootpass status
@@ -125,6 +162,9 @@ fi
 
 # install_application_server.html
 if [ ! -d /opt/tomcat ]; then
+    echo "********************"
+    echo "Installing Tomcat application server and configuring.."
+    echo "********************"
     wget -nv $DOWNLOAD_URI_TOMCAT -O /tmp/apache-tomcat.tar.gz
     sudo tar -x -f /tmp/apache-tomcat.tar.gz -C /opt/
     TOMCAT_DIR=$(basename /opt/apache-tomcat-*)
@@ -261,12 +301,20 @@ fi
 
 # create_configuration_folder.html
 if [ ! -d /etc/escenic ]; then
+    echo "********************"
+    echo "Creating configuration folder"
+    echo "********************"
+
     sudo mkdir -p /etc/escenic/engine
     sudo chown -R escenic:escenic /etc/escenic
 fi
 
 # unpack_content_engine_components.html
 if [ ! -d /opt/escenic ]; then
+    echo "********************"
+    echo "Unpacking content engine components.."
+    echo "********************"
+
     sudo mkdir /opt/escenic
     sudo unzip -q -d  /opt/escenic/ /tmp/engine.zip
     ENGINE_DIR=$(basename /opt/escenic/engine-*)
@@ -280,6 +328,10 @@ fi
 
 # link_logging.html
 if [ ! -f /opt/tomcat/lib/trace.properties ]; then
+    echo "********************"
+    echo "Linking logger.."
+    echo "********************"
+
     sudo su escenic -c "mkdir /etc/escenic/engine/common"
     sudo su escenic -c "cat << EOF > /etc/escenic/engine/common/trace.properties
 log4j.rootCategory=ERROR
@@ -299,6 +351,10 @@ fi
 
 # copy_solr_configuration.html
 if [ ! -d /var/lib/escenic/solr ]; then
+    echo "********************"
+    echo "Solr setup.."
+    echo "********************"
+
     sudo mkdir -p /var/lib/escenic/solr
     sudo cp -r /opt/escenic/engine/solr/* /var/lib/escenic/solr/
     sudo chown -R escenic:escenic /var/lib/escenic
@@ -306,6 +362,10 @@ fi
 
 # initialize_the_assembly_tool.html
 if [ ! -f /opt/escenic/assemblytool/assemble.properties ]; then
+    echo "********************"
+    echo "Initializing assembly tool.."
+    echo "********************"
+
     sudo su escenic -c "
         cd /opt/escenic/assemblytool
         ant initialize
@@ -329,6 +389,10 @@ fi
 
 # initialize_edit_bootstrap_layer.html
 if [ ! -d /opt/escenic/assemblytool/conf ]; then
+    echo "********************"
+    echo "Initializing bootstrap layer (ant -q ear)"
+    echo "********************"
+
     sudo su escenic -c "
         cd /opt/escenic/assemblytool
         ant -q ear
@@ -337,6 +401,10 @@ fi
 
 # create_the_common_configuration_layer.html
 if [ ! -f /etc/escenic/engine/common/Initial.properties ]; then
+    echo "********************"
+    echo "Creating common config layer.."
+    echo "********************"
+
     sudo su escenic -c "
         cp -r /opt/escenic/engine/siteconfig/config-skeleton/* /etc/escenic/engine/common/
         cp -r /opt/escenic/engine/security/ /etc/escenic/engine/common/
@@ -381,6 +449,10 @@ fi
 
 # install_the_ece_script.html
 if [ ! -f /usr/bin/ece ]; then
+    echo "********************"
+    echo "Installing ece scripts.."
+    echo "********************"
+
     sudo cp /opt/escenic/engine/ece-scripts/usr/bin/ece /usr/bin
     sudo chmod +x /opt/escenic/engine/ece-scripts/usr/bin/ece
     sudo chmod +x /usr/bin/ece
@@ -447,6 +519,10 @@ sudo su escenic -c "ece assemble"
 # install_a_daemon_script.html
 
 if [ ! -f /etc/init.d/ece ]; then
+    echo "********************"
+    echo "Installing daemon scripts"
+    echo "********************"
+
     sudo cp /opt/escenic/engine/ece-scripts/etc/init.d/ece /etc/init.d
     sudo cp /opt/escenic/engine/ece-scripts/etc/default/ece /etc/default
 
@@ -460,6 +536,9 @@ if [ ! -f /etc/init.d/ece ]; then
 
 fi
 
+    echo "********************"
+    echo "DONE DONE DONE! WOHOO! Now SSH into the box with 'ssh -p 2222 escenic@localhost' and run 'ece deploy'"
+    echo "********************"
 
 
 exit 0
